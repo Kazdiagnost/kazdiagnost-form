@@ -1,1 +1,62 @@
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+
+const FEATURES = [
+  "имт_норма", "сознание_ясное", "положение_в_постели_активное",
+  "тип_конституции_астеник", "тип_конституции_гиперстеник", "тип_конституции_нормастеник",
+  "цвет_кожных_покровы_бледные", "цвет_кожных_покровы_грязно-серый оттенок", "цвет_кожных_покровы_норма",
+  "влажность_кожных_покровов_влажная", "влажность_кожных_покровов_норма", "влажность_кожных_покровов_сухая",
+  "симптом_красных_капелек_есть", "симптом_красных_капелек_нет", "симптом_гротт_есть", "симптом_гротт_нет",
+  "зона_шоффара_есть", "зона_шоффара_нет", "зона_мэйо-робсона_нет", "симптом_мюсси_есть", "симптом_мюсси_нет",
+  "зона_маккензи_есть", "зона_маккензи_нет", "зона_бергмана_есть", "зона_бергмана_нет",
+  "симптом_мерфи_есть", "симптом_мерфи_нет", "симптом_айзенберга_есть", "симптом_айзенберга_нет",
+  "симптом_боаса_есть", "симптом_боаса_нет", "аппетит_норма", "аппетит_снижена",
+  // ... (продолжите список до конца)
+]
+
+export default function KazDiagnostForm() {
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+
+  const toggleFeature = (feature: string) => {
+    setSelected(prev => {
+      const newSet = new Set(prev)
+      newSet.has(feature) ? newSet.delete(feature) : newSet.add(feature)
+      return newSet
+    })
+  }
+
+  const exportCsv = () => {
+    const values = FEATURES.map(f => selected.has(f) ? "1" : "0")
+    const csv = values.join(",")
+    navigator.clipboard.writeText(csv)
+    alert("CSV скопирован в буфер обмена!")
+  }
+
+  return (
+    <div className="p-4 max-w-4xl mx-auto">
+      <h1 className="text-xl font-bold mb-4">Форма симптомов для KazDiagnost</h1>
+      <ScrollArea className="h-[500px] border rounded-xl">
+        <Card className="p-4">
+          <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-2">
+            {FEATURES.map(f => (
+              <label key={f} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={selected.has(f)}
+                  onChange={() => toggleFeature(f)}
+                />
+                <span>{f}</span>
+              </label>
+            ))}
+          </CardContent>
+        </Card>
+      </ScrollArea>
+      <div className="mt-4 flex justify-end">
+        <Button onClick={exportCsv}>Экспортировать CSV</Button>
+      </div>
+    </div>
+  )
+}
 
